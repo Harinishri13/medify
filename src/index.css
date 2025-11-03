@@ -11,3 +11,41 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+.home{
+  text-align: left;
+  color: grey;
+}
+.motto{
+color: whitesmoke;
+background-color: #2AA7FF;
+justify-content: center;
+text-align: center;
+padding: 16px;;
+}
+.navbar-list {
+  display: flex;
+  list-style: none;
+  padding: 8px 16px 100px 64px;
+  margin: 16px;
+  gap: 20px; /* spacing between items */
+  background-color: linear-gradient(rgb(231, 240, 255), rgb(232, 241, 255));
+ ;
+  color: black;
+
+}
+
+.navbar-list li {
+  cursor: pointer;
+  padding: 8px 12px;
+  transition: background 0.3s ease;
+  color: black;
+}
+
+.navbar-list li:hover {
+  background-color: #f0f0f0;
+  border-radius: 4px;
+  color: black;
+}
+.nav-link{
+  color: black;
+}

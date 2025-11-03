@@ -1,23 +1,49 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import "./App.css";
+import Header from "./components/Header";
+import Navbar from "./components/Navbar";
+import SearchForm from "./components/SearchForm";
+import Results from "./components/Results";
+import BookingModal from "./components/BookingModal";
+import MyBookings from "./components/MyBookings";
 
 function App() {
+  const [centers, setCenters] = useState([]);
+  const [selectedCenter, setSelectedCenter] = useState(null);
+  const [showBookings, setShowBookings] = useState(false);
+  const [cityName, setCityName] = useState("");
+
+  const handleSearchResults = (data, city) => {
+    setCenters(data);
+    setCityName(city);
+    setShowBookings(false);
+  };
+
+  const openBookingModal = (center) => setSelectedCenter(center);
+  const closeBookingModal = () => setSelectedCenter(null);
+
+  const toggleMyBookings = () => setShowBookings((prev) => !prev);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Navbar onMyBookingsClick={toggleMyBookings} />
+      <Header />
+      {!showBookings && (
+        <>
+          <SearchForm onResults={handleSearchResults} />
+          {centers.length > 0 && (
+            <Results
+              centers={centers}
+              cityName={cityName}
+              onBookClick={openBookingModal}
+            />
+          )}
+        </>
+      )}
+      {showBookings && <MyBookings />}
+      {selectedCenter && (
+        <BookingModal center={selectedCenter} onClose={closeBookingModal} />
+      )}
     </div>
   );
 }
