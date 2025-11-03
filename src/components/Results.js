@@ -6,7 +6,7 @@ export default function Results({ centers, cityName }) {
   const [selectedTime, setSelectedTime] = useState("");
   const [bookings, setBookings] = useState([]);
 
-  // Generate dates for horizontal cards (Today, Tomorrow, Thu 16 Oct format)
+  // Generate dates for horizontal cards
   const getDateCards = () => {
     const dates = [];
     const today = new Date();
@@ -50,15 +50,29 @@ export default function Results({ centers, cityName }) {
 
   const dateCards = getDateCards();
 
-  // Time slots in the expected format
-  const timeSlots = [
-    "Morning 11:30 AM",
-    "Afternoon 1:00 PM",
-    "Evening 5:00 PM",
-    "Morning 10:00 AM",
-    "Afternoon 2:30 PM",
-    "Evening 6:00 PM",
-  ];
+  // Grouped time slots by period
+  const groupedTimeSlots = {
+    morning: [
+      { label: "10:00 AM", available: true },
+      { label: "10:30 AM", available: true },
+      { label: "11:00 AM", available: true },
+      { label: "11:30 AM", available: true },
+    ],
+    afternoon: [
+      { label: "12:00 PM", available: true },
+      { label: "12:30 PM", available: true },
+      { label: "1:00 PM", available: true },
+      { label: "1:30 PM", available: true },
+      { label: "2:00 PM", available: true },
+      { label: "2:30 PM", available: true },
+    ],
+    evening: [
+      { label: "5:00 PM", available: true },
+      { label: "5:30 PM", available: true },
+      { label: "6:00 PM", available: true },
+      { label: "6:30 PM", available: true },
+    ],
+  };
 
   // Load bookings from localStorage
   useEffect(() => {
@@ -70,15 +84,18 @@ export default function Results({ centers, cityName }) {
 
   const handleBookClick = (center) => {
     setSelectedCenter(center);
-    setSelectedDate("Today"); // Reset to Today when new center selected
+    setSelectedDate("Today");
     setSelectedTime("");
   };
 
   const handleDateSelect = (dateValue) => {
     setSelectedDate(dateValue);
+    setSelectedTime("");
   };
 
-  const handleTimeChange = (e) => setSelectedTime(e.target.value);
+  const handleTimeSelect = (time) => {
+    setSelectedTime(time);
+  };
 
   const handleConfirmBooking = () => {
     if (selectedCenter && selectedDate && selectedTime) {
@@ -98,19 +115,12 @@ export default function Results({ centers, cityName }) {
       const updatedBookings = [...bookings, newBooking];
       setBookings(updatedBookings);
 
-      // Save to both keys for test compatibility
       localStorage.setItem("medicalBookings", JSON.stringify(updatedBookings));
       localStorage.setItem("bookings", JSON.stringify(updatedBookings));
 
-      // Reset and show success
       setSelectedCenter(null);
       setSelectedDate("Today");
       setSelectedTime("");
-
-      // Optional: Show success message
-      alert(
-        `Booking confirmed for ${selectedCenter["Hospital Name"]} on ${selectedDate} at ${selectedTime}`
-      );
     }
   };
 
@@ -162,7 +172,7 @@ export default function Results({ centers, cityName }) {
 
   return (
     <section style={{ padding: "2rem" }}>
-      {/* Results Header - Fix for Test 2 */}
+      {/* Results Header */}
       <h1 style={{ marginBottom: "2rem", color: "#333" }}>
         {centers ? centers.length : 0} medical centers available in{" "}
         {cityName ? cityName.toLowerCase() : ""}
@@ -219,12 +229,6 @@ export default function Results({ centers, cityName }) {
                   fontWeight: "bold",
                   marginTop: "1rem",
                 }}
-                onMouseEnter={(e) => {
-                  e.target.style.backgroundColor = "#1e3d6f";
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.backgroundColor = "#2c5aa0";
-                }}
               >
                 Book FREE Center Visit
               </button>
@@ -235,7 +239,7 @@ export default function Results({ centers, cityName }) {
         )}
       </div>
 
-      {/* Booking Modal/Section - Fix for Test 4 */}
+      {/* Booking Modal with Grouped Time Slots */}
       {selectedCenter && (
         <div
           className="booking-section"
@@ -249,8 +253,10 @@ export default function Results({ centers, cityName }) {
             borderRadius: "12px",
             boxShadow: "0 10px 30px rgba(0,0,0,0.3)",
             zIndex: 1000,
-            minWidth: "500px",
+            minWidth: "600px",
             maxWidth: "90vw",
+            maxHeight: "90vh",
+            overflowY: "auto",
           }}
         >
           <div
@@ -316,7 +322,6 @@ export default function Results({ centers, cityName }) {
                     minWidth: "100px",
                     textAlign: "center",
                     flexShrink: 0,
-                    transition: "all 0.3s ease",
                   }}
                 >
                   <div style={{ fontSize: "16px", fontWeight: "bold" }}>
@@ -330,7 +335,7 @@ export default function Results({ centers, cityName }) {
             </div>
           </div>
 
-          {/* Time Selection - Fix for Test 4 */}
+          {/* Time Selection - Grouped by Period */}
           <div style={{ margin: "1.5rem 0" }}>
             <p
               style={{
@@ -339,32 +344,199 @@ export default function Results({ centers, cityName }) {
                 color: "#333",
               }}
             >
-              Select Time Slot:
+              Available Time Slots:
             </p>
-            <select
-              value={selectedTime}
-              onChange={handleTimeChange}
-              style={{
-                width: "100%",
-                padding: "12px",
-                border: "2px solid #e0e0e0",
-                borderRadius: "6px",
-                fontSize: "1rem",
-                backgroundColor: "white",
-              }}
-            >
-              <option value="">Select a time slot</option>
-              {timeSlots.map((time, index) => (
-                <option key={index} value={time}>
-                  {time}
-                </option>
-              ))}
-            </select>
+
+            {/* Morning Block */}
+            <div style={{ marginBottom: "1.5rem" }}>
+              <h4
+                style={{
+                  color: "#2c5aa0",
+                  marginBottom: "0.5rem",
+                  fontSize: "1.1rem",
+                }}
+              >
+                Morning
+              </h4>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(100px, 1fr))",
+                  gap: "10px",
+                }}
+              >
+                {groupedTimeSlots.morning.map((slot, index) => (
+                  <div
+                    key={index}
+                    onClick={() =>
+                      slot.available && handleTimeSelect(slot.label)
+                    }
+                    style={{
+                      padding: "12px 8px",
+                      border: `2px solid ${
+                        selectedTime === slot.label
+                          ? "#28a745"
+                          : slot.available
+                          ? "#e0e0e0"
+                          : "#f8d7da"
+                      }`,
+                      borderRadius: "6px",
+                      cursor: slot.available ? "pointer" : "not-allowed",
+                      backgroundColor:
+                        selectedTime === slot.label
+                          ? "#28a745"
+                          : slot.available
+                          ? "white"
+                          : "#f8d7da",
+                      color:
+                        selectedTime === slot.label
+                          ? "white"
+                          : slot.available
+                          ? "#333"
+                          : "#721c24",
+                      transition: "all 0.3s ease",
+                      textAlign: "center",
+                      fontSize: "14px",
+                    }}
+                    onMouseEnter={(e) => {
+                      if (slot.available && selectedTime !== slot.label) {
+                        e.currentTarget.style.backgroundColor = "#f8f9fa";
+                        e.currentTarget.style.borderColor = "#2c5aa0";
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (slot.available && selectedTime !== slot.label) {
+                        e.currentTarget.style.backgroundColor = "white";
+                        e.currentTarget.style.borderColor = "#e0e0e0";
+                      }
+                    }}
+                  >
+                    {slot.label}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Afternoon Block */}
+            <div style={{ marginBottom: "1.5rem" }}>
+              <h4
+                style={{
+                  color: "#2c5aa0",
+                  marginBottom: "0.5rem",
+                  fontSize: "1.1rem",
+                }}
+              >
+                Afternoon
+              </h4>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(100px, 1fr))",
+                  gap: "10px",
+                }}
+              >
+                {groupedTimeSlots.afternoon.map((slot, index) => (
+                  <div
+                    key={index}
+                    onClick={() =>
+                      slot.available && handleTimeSelect(slot.label)
+                    }
+                    style={{
+                      padding: "12px 8px",
+                      border: `2px solid ${
+                        selectedTime === slot.label
+                          ? "#28a745"
+                          : slot.available
+                          ? "#e0e0e0"
+                          : "#f8d7da"
+                      }`,
+                      borderRadius: "6px",
+                      cursor: slot.available ? "pointer" : "not-allowed",
+                      backgroundColor:
+                        selectedTime === slot.label
+                          ? "#28a745"
+                          : slot.available
+                          ? "white"
+                          : "#f8d7da",
+                      color:
+                        selectedTime === slot.label
+                          ? "white"
+                          : slot.available
+                          ? "#333"
+                          : "#721c24",
+                      transition: "all 0.3s ease",
+                      textAlign: "center",
+                      fontSize: "14px",
+                    }}
+                  >
+                    {slot.label}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Evening Block */}
+            <div style={{ marginBottom: "1.5rem" }}>
+              <h4
+                style={{
+                  color: "#2c5aa0",
+                  marginBottom: "0.5rem",
+                  fontSize: "1.1rem",
+                }}
+              >
+                Evening
+              </h4>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(100px, 1fr))",
+                  gap: "10px",
+                }}
+              >
+                {groupedTimeSlots.evening.map((slot, index) => (
+                  <div
+                    key={index}
+                    onClick={() =>
+                      slot.available && handleTimeSelect(slot.label)
+                    }
+                    style={{
+                      padding: "12px 8px",
+                      border: `2px solid ${
+                        selectedTime === slot.label
+                          ? "#28a745"
+                          : slot.available
+                          ? "#e0e0e0"
+                          : "#f8d7da"
+                      }`,
+                      borderRadius: "6px",
+                      cursor: slot.available ? "pointer" : "not-allowed",
+                      backgroundColor:
+                        selectedTime === slot.label
+                          ? "#28a745"
+                          : slot.available
+                          ? "white"
+                          : "#f8d7da",
+                      color:
+                        selectedTime === slot.label
+                          ? "white"
+                          : slot.available
+                          ? "#333"
+                          : "#721c24",
+                      transition: "all 0.3s ease",
+                      textAlign: "center",
+                      fontSize: "14px",
+                    }}
+                  >
+                    {slot.label}
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
 
           {/* Today paragraph that the test expects */}
           <p style={{ color: "#666", fontStyle: "italic", margin: "1rem 0" }}>
-            Available slots for Today
+            Available slots for {selectedDate}
           </p>
 
           <button
@@ -381,20 +553,11 @@ export default function Results({ centers, cityName }) {
               fontSize: "1.1rem",
               fontWeight: "bold",
               marginTop: "1rem",
-              transition: "all 0.3s ease",
-            }}
-            onMouseEnter={(e) => {
-              if (selectedTime) {
-                e.target.style.backgroundColor = "#218838";
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (selectedTime) {
-                e.target.style.backgroundColor = "#28a745";
-              }
             }}
           >
-            Confirm Booking
+            {selectedTime
+              ? `Confirm Booking for ${selectedTime}`
+              : "Select a Time Slot"}
           </button>
         </div>
       )}
