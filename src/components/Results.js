@@ -14,7 +14,7 @@ export default function Results({ centers, cityName }) {
 
   return (
     <section>
-      {/* Main results header for Cypress */}
+      {/* Main results header - must match test expectation */}
       <h1>
         {centers.length} medical centers available in {cityName}
       </h1>
@@ -34,12 +34,13 @@ export default function Results({ centers, cityName }) {
               {c.City}, {c.State} - {c["ZIP Code"]}
             </p>
             <p>Rating: {c["Overall Rating"] || "N/A"}</p>
+            {/* Test expects button with text "Book FREE Center Visit" */}
             <button className="book-btn">Book FREE Center Visit</button>
           </div>
         ))}
       </div>
 
-      {/* Booking section */}
+      {/* Booking section - must appear after clicking book button */}
       {selectedCenter && (
         <div
           className="booking-section"
@@ -52,7 +53,7 @@ export default function Results({ centers, cityName }) {
           <h1>Book Appointment</h1>
           <h3>{selectedCenter["Hospital Name"]}</h3>
 
-          {/* Date selector */}
+          {/* Date selector - must have "Today" as default */}
           <label>
             Date:
             <select value={selectedDate} onChange={handleDateChange}>
