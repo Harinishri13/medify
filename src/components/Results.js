@@ -8,16 +8,19 @@ export default function Results({ centers, cityName, onBookClick }) {
       </h1>
       <div className="results">
         {centers.map((c, idx) => (
-          <div key={idx} className="card">
+          <div
+            key={idx}
+            className="card"
+            onClick={() => onBookClick(c)}
+            style={{ cursor: "pointer" }}
+          >
             <h3>{c["Hospital Name"]}</h3>
             <p>{c.Address}</p>
             <p>
               {c.City}, {c.State} - {c["ZIP Code"]}
             </p>
             <p>Rating: {c["Overall Rating"] || "N/A"}</p>
-            <button className="book-btn" onClick={() => onBookClick(c)}>
-              Book FREE Center Visit
-            </button>
+            <button className="book-btn">Book FREE Center Visit</button>
           </div>
         ))}
       </div>

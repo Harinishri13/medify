@@ -38,7 +38,6 @@ export default function BookingModal({ center, onClose }) {
       period,
     });
     onClose();
-    alert("Booking saved!");
   };
 
   return (
