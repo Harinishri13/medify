@@ -4,8 +4,12 @@ export default function MyBookings() {
   const [bookings, setBookings] = useState([]);
 
   useEffect(() => {
-    const raw = localStorage.getItem("bookings");
-    setBookings(raw ? JSON.parse(raw) : []);
+    // Try multiple possible storage keys
+    const medicalBookings = localStorage.getItem("medicalBookings");
+    const regularBookings = localStorage.getItem("bookings");
+
+    const savedBookings = medicalBookings || regularBookings;
+    setBookings(savedBookings ? JSON.parse(savedBookings) : []);
   }, []);
 
   return (
@@ -15,7 +19,7 @@ export default function MyBookings() {
       <div className="bookings-list">
         {bookings.map((b, idx) => (
           <div className="booking-card" key={idx}>
-            <h3>{b.centerName}</h3>
+            <h3>{b.centerName || b.hospitalName}</h3>
             <p>{b.address}</p>
             <p>
               {b.city}, {b.state} - {b.zip}
