@@ -21,7 +21,10 @@ export default function SearchForm({ onResults }) {
   }, []);
 
   useEffect(() => {
-    if (!stateName) return;
+    if (!stateName) {
+      setCities([]); // Clear cities when state is cleared
+      return;
+    }
     const getCities = async () => {
       const res = await fetchCities(stateName);
       setCities(res);
@@ -45,7 +48,19 @@ export default function SearchForm({ onResults }) {
   const handleSearch = async () => {
     if (!stateName || !cityName) return;
     const results = await fetchCenters(stateName, cityName);
-    onResults(results);
+    onResults(results, cityName); // Pass cityName to onResults
+  };
+
+  const handleStateSelect = (state) => {
+    setStateName(state);
+    setCityName(""); // Reset city name when state changes
+    setShowStateDropdown(false);
+    setCities([]); // Clear cities list
+  };
+
+  const handleCitySelect = (city) => {
+    setCityName(city);
+    setShowCityDropdown(false);
   };
 
   return (
@@ -68,11 +83,7 @@ export default function SearchForm({ onResults }) {
               states.map((s) => (
                 <li
                   key={s}
-                  onClick={() => {
-                    setStateName(s);
-                    setShowStateDropdown(false);
-                    setCityName("");
-                  }}
+                  onClick={() => handleStateSelect(s)}
                   className={stateName === s ? "selected" : ""}
                 >
                   {s}
@@ -91,7 +102,7 @@ export default function SearchForm({ onResults }) {
           value={cityName}
           readOnly
           className="dropdown-input"
-          onClick={() => setShowCityDropdown(!showCityDropdown)}
+          onClick={() => stateName && setShowCityDropdown(!showCityDropdown)}
           disabled={!stateName}
         />
         {showCityDropdown && (
@@ -102,10 +113,7 @@ export default function SearchForm({ onResults }) {
               cities.map((c) => (
                 <li
                   key={c}
-                  onClick={() => {
-                    setCityName(c);
-                    setShowCityDropdown(false);
-                  }}
+                  onClick={() => handleCitySelect(c)}
                   className={cityName === c ? "selected" : ""}
                 >
                   {c}
@@ -120,6 +128,7 @@ export default function SearchForm({ onResults }) {
         onClick={handleSearch}
         id="searchBtn"
         className="search-button"
+        disabled={!stateName || !cityName}
       >
         Search
       </button>
