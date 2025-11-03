@@ -3,9 +3,9 @@ import React from "react";
 export default function Results({ centers, cityName, onBookClick }) {
   return (
     <section>
-      <h1>
+      <h3>
         {centers.length} medical centers available in {cityName}
-      </h1>
+      </h3>
       <div className="results">
         {centers.map((c, idx) => (
           <div

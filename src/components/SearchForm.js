@@ -118,7 +118,7 @@ export default function SearchForm({ onResults }) {
 
       <button
         onClick={handleSearch}
-        id="search-button"
+        id="searchBtn"
         className="search-button"
       >
         Search
