@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { fetchStates, fetchCities, fetchCenters } from "../utils/api";
+import { fetchStates, fetchCities, fetchCenters } from "./api";
 
 export default function SearchForm({ onResults }) {
   const [states, setStates] = useState([]);
