@@ -12,7 +12,6 @@ export default function SearchForm({ onResults }) {
   const stateRef = useRef();
   const cityRef = useRef();
 
-  // Fetch states on mount
   useEffect(() => {
     const getStates = async () => {
       const res = await fetchStates();
@@ -21,7 +20,6 @@ export default function SearchForm({ onResults }) {
     getStates();
   }, []);
 
-  // Fetch cities when a state is selected
   useEffect(() => {
     if (!stateName) return;
     const getCities = async () => {
@@ -31,7 +29,6 @@ export default function SearchForm({ onResults }) {
     getCities();
   }, [stateName]);
 
-  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (stateRef.current && !stateRef.current.contains(event.target)) {
@@ -41,12 +38,10 @@ export default function SearchForm({ onResults }) {
         setShowCityDropdown(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Handle form submission
   const handleSearch = async () => {
     if (!stateName || !cityName) return;
     const results = await fetchCenters(stateName, cityName);
@@ -56,7 +51,7 @@ export default function SearchForm({ onResults }) {
   return (
     <div className="search-form">
       {/* State Dropdown */}
-      <div className="dropdown" ref={stateRef}>
+      <div className="dropdown" id="state" ref={stateRef}>
         <input
           type="text"
           placeholder="Select State"
@@ -76,7 +71,7 @@ export default function SearchForm({ onResults }) {
                   onClick={() => {
                     setStateName(s);
                     setShowStateDropdown(false);
-                    setCityName(""); // reset city when state changes
+                    setCityName("");
                   }}
                   className={stateName === s ? "selected" : ""}
                 >
@@ -89,7 +84,7 @@ export default function SearchForm({ onResults }) {
       </div>
 
       {/* City Dropdown */}
-      <div className="dropdown" ref={cityRef}>
+      <div className="dropdown" id="city" ref={cityRef}>
         <input
           type="text"
           placeholder="Select City"
@@ -97,7 +92,7 @@ export default function SearchForm({ onResults }) {
           readOnly
           className="dropdown-input"
           onClick={() => setShowCityDropdown(!showCityDropdown)}
-          disabled={!stateName} // disable until a state is selected
+          disabled={!stateName}
         />
         {showCityDropdown && (
           <ul className="dropdown-list">
@@ -121,7 +116,11 @@ export default function SearchForm({ onResults }) {
         )}
       </div>
 
-      <button onClick={handleSearch} className="search-button">
+      <button
+        onClick={handleSearch}
+        id="search-button"
+        className="search-button"
+      >
         Search
       </button>
     </div>
