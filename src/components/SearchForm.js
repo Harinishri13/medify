@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { fetchStates, fetchCities, fetchCenters } from "./api";
 
 export default function SearchForm({ onResults }) {
@@ -6,75 +6,124 @@ export default function SearchForm({ onResults }) {
   const [cities, setCities] = useState([]);
   const [stateName, setStateName] = useState("");
   const [cityName, setCityName] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [showStateDropdown, setShowStateDropdown] = useState(false);
+  const [showCityDropdown, setShowCityDropdown] = useState(false);
 
+  const stateRef = useRef();
+  const cityRef = useRef();
+
+  // Fetch states on mount
   useEffect(() => {
-    fetchStates()
-      .then(setStates)
-      .catch(() => setStates([]));
+    const getStates = async () => {
+      const res = await fetchStates();
+      setStates(res);
+    };
+    getStates();
   }, []);
 
+  // Fetch cities when a state is selected
   useEffect(() => {
-    if (!stateName) return setCities([]);
-    fetchCities(stateName)
-      .then(setCities)
-      .catch(() => setCities([]));
+    if (!stateName) return;
+    const getCities = async () => {
+      const res = await fetchCities(stateName);
+      setCities(res);
+    };
+    getCities();
   }, [stateName]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (stateRef.current && !stateRef.current.contains(event.target)) {
+        setShowStateDropdown(false);
+      }
+      if (cityRef.current && !cityRef.current.contains(event.target)) {
+        setShowCityDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Handle form submission
+  const handleSearch = async () => {
     if (!stateName || !cityName) return;
-    setLoading(true);
-    const data = await fetchCenters(stateName, cityName);
-    setLoading(false);
-    onResults(data || [], cityName.toLowerCase());
+    const results = await fetchCenters(stateName, cityName);
+    onResults(results);
   };
 
   return (
-    <form className="search-form" onSubmit={handleSubmit}>
-      <div id="state" className="field">
-        <label>State</label>
-        <ul>
-          {states.length === 0 ? (
-            <li>Loading...</li>
-          ) : (
-            states.map((s) => (
-              <li
-                key={s}
-                onClick={() => setStateName(s)}
-                style={{ cursor: "pointer", listStyle: "none", padding: "3px" }}
-              >
-                {s}
-              </li>
-            ))
-          )}
-        </ul>
+    <div className="search-form">
+      {/* State Dropdown */}
+      <div className="dropdown" ref={stateRef}>
+        <input
+          type="text"
+          placeholder="Select State"
+          value={stateName}
+          readOnly
+          className="dropdown-input"
+          onClick={() => setShowStateDropdown(!showStateDropdown)}
+        />
+        {showStateDropdown && (
+          <ul className="dropdown-list">
+            {states.length === 0 ? (
+              <li>Loading...</li>
+            ) : (
+              states.map((s) => (
+                <li
+                  key={s}
+                  onClick={() => {
+                    setStateName(s);
+                    setShowStateDropdown(false);
+                    setCityName(""); // reset city when state changes
+                  }}
+                  className={stateName === s ? "selected" : ""}
+                >
+                  {s}
+                </li>
+              ))
+            )}
+          </ul>
+        )}
       </div>
 
-      <div id="city" className="field">
-        <label>City</label>
-        <ul>
-          {cities.length === 0 ? (
-            <li>Loading...</li>
-          ) : (
-            cities.map((c) => (
-              <li
-                key={c}
-                onClick={() => setCityName(c)}
-                style={{ cursor: "pointer", listStyle: "none", padding: "3px" }}
-              >
-                {c}
-              </li>
-            ))
-          )}
-        </ul>
+      {/* City Dropdown */}
+      <div className="dropdown" ref={cityRef}>
+        <input
+          type="text"
+          placeholder="Select City"
+          value={cityName}
+          readOnly
+          className="dropdown-input"
+          onClick={() => setShowCityDropdown(!showCityDropdown)}
+          disabled={!stateName} // disable until a state is selected
+        />
+        {showCityDropdown && (
+          <ul className="dropdown-list">
+            {cities.length === 0 ? (
+              <li>Loading...</li>
+            ) : (
+              cities.map((c) => (
+                <li
+                  key={c}
+                  onClick={() => {
+                    setCityName(c);
+                    setShowCityDropdown(false);
+                  }}
+                  className={cityName === c ? "selected" : ""}
+                >
+                  {c}
+                </li>
+              ))
+            )}
+          </ul>
+        )}
       </div>
 
-      <div className="field">
-        <button type="submit" id="searchBtn">
-          {loading ? "Searching..." : "Search"}
-        </button>
-      </div>
-    </form>
+      <button onClick={handleSearch} className="search-button">
+        Search
+      </button>
+    </div>
   );
 }
