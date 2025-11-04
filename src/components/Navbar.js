@@ -1,7 +1,8 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import Logo from "./medifyLogo.png";
 
-function Navbar({ onMyBookingsClick }) {
+function Navbar() {
   return (
     <nav className="navbar">
       <ul className="navbar-list">
@@ -9,39 +10,39 @@ function Navbar({ onMyBookingsClick }) {
           <img src={Logo} className="medify-logo" alt="Medify Logo" />
         </li>
         <li className="nav-item">
-          <a className="nav-link" href="/">
+          <Link className="nav-link" to="/">
             Find Doctors
-          </a>
+          </Link>
         </li>
         <li className="nav-item">
-          <a className="nav-link" href="/">
+          <Link className="nav-link" to="/">
             Hospitals
-          </a>
+          </Link>
         </li>
         <li className="nav-item">
-          <a className="nav-link" href="/">
+          <Link className="nav-link" to="/">
             Medicines
-          </a>
+          </Link>
         </li>
         <li className="nav-item">
-          <a className="nav-link" href="/">
+          <Link className="nav-link" to="/">
             Surgeries
-          </a>
+          </Link>
         </li>
         <li className="nav-item">
-          <a className="nav-link" href="/">
+          <Link className="nav-link" to="/">
             Software for Providers
-          </a>
+          </Link>
         </li>
         <li className="nav-item">
-          <a className="nav-link" href="/">
+          <Link className="nav-link" to="/">
             Facilities
-          </a>
+          </Link>
         </li>
         <li className="nav-item">
-          <button className="nav-link" onClick={onMyBookingsClick}>
+          <Link className="nav-link" to="/bookings">
             My Bookings
-          </button>
+          </Link>
         </li>
       </ul>
     </nav>
