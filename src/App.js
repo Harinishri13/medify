@@ -48,7 +48,7 @@ function App() {
               </>
             }
           />
-          <Route path="/bookings" element={<MyBookings />} />
+          <Route path="/my-bookings" element={<MyBookings />} />
         </Routes>
       </div>
     </Router>
