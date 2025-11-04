@@ -1,46 +1,48 @@
 import React, { useEffect, useState } from "react";
 
-function MyBookings() {
+export default function MyBookings() {
   const [bookings, setBookings] = useState([]);
 
   useEffect(() => {
-    const raw = localStorage.getItem("bookings");
-    if (raw) {
-      try {
-        const parsed = JSON.parse(raw);
-        setBookings(Array.isArray(parsed) ? parsed : []);
-      } catch {
-        setBookings([]);
-      }
+    const medical = localStorage.getItem("medicalBookings");
+    const regular = localStorage.getItem("bookings");
+
+    const data = medical || regular;
+    try {
+      setBookings(data ? JSON.parse(data) : []);
+    } catch {
+      setBookings([]);
     }
   }, []);
 
-  const getValue = (obj, ...possibleKeys) => {
-    for (const key of possibleKeys) {
-      if (obj[key] !== undefined) return obj[key];
-    }
-    return "";
-  };
-
   return (
-    <div className="my-bookings">
+    <div className="bookings-page" style={{ padding: "2rem" }}>
       <h1>My Bookings</h1>
       {bookings.length === 0 ? (
-        <p>No bookings found</p>
+        <p>No bookings yet.</p>
       ) : (
         <div className="bookings-list">
-          {bookings.map((b, i) => (
-            <div key={i} className="booking-card">
-              <h3>
-                {getValue(b, "Hospital Name", "hospitalName", "centerName")}
-              </h3>
+          {bookings.map((b, idx) => (
+            <div
+              key={b.id || idx}
+              className="booking-card"
+              style={{
+                border: "1px solid #ddd",
+                padding: "1.5rem",
+                margin: "1rem 0",
+                borderRadius: "8px",
+                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+              }}
+            >
+              <h3>{b.hospitalName || b.centerName || b["Hospital Name"]}</h3>
+              <p>{b.address}</p>
               <p>
-                {getValue(b, "City", "city")}, {getValue(b, "State", "state")}
+                {b.city}, {b.state} - {b.zip}
               </p>
-              <p>Type: {getValue(b, "Hospital Type", "type")}</p>
-              <p>Rating: {getValue(b, "Hospital overall rating", "rating")}</p>
-              <p>Date: {getValue(b, "bookingDate", "date")}</p>
-              <p>Time: {getValue(b, "bookingTime", "time")}</p>
+              <p>
+                <strong>Date:</strong> {b.date || b.bookingDate} |{" "}
+                <strong>Time:</strong> {b.time || b.bookingTime}
+              </p>
             </div>
           ))}
         </div>
@@ -48,5 +50,3 @@ function MyBookings() {
     </div>
   );
 }
-
-export default MyBookings;
