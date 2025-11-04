@@ -349,7 +349,7 @@ export default function Results({ centers, cityName }) {
 
             {/* Morning Block */}
             <div style={{ marginBottom: "1.5rem" }}>
-              <h4
+              <p
                 style={{
                   color: "#2c5aa0",
                   marginBottom: "0.5rem",
@@ -357,7 +357,7 @@ export default function Results({ centers, cityName }) {
                 }}
               >
                 Morning
-              </h4>
+              </p>
               <div
                 style={{
                   display: "grid",
@@ -419,7 +419,7 @@ export default function Results({ centers, cityName }) {
 
             {/* Afternoon Block */}
             <div style={{ marginBottom: "1.5rem" }}>
-              <h4
+              <p
                 style={{
                   color: "#2c5aa0",
                   marginBottom: "0.5rem",
@@ -427,7 +427,7 @@ export default function Results({ centers, cityName }) {
                 }}
               >
                 Afternoon
-              </h4>
+              </p>
               <div
                 style={{
                   display: "grid",
@@ -477,7 +477,7 @@ export default function Results({ centers, cityName }) {
 
             {/* Evening Block */}
             <div style={{ marginBottom: "1.5rem" }}>
-              <h4
+              <p
                 style={{
                   color: "#2c5aa0",
                   marginBottom: "0.5rem",
@@ -485,7 +485,7 @@ export default function Results({ centers, cityName }) {
                 }}
               >
                 Evening
-              </h4>
+              </p>
               <div
                 style={{
                   display: "grid",
