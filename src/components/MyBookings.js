@@ -1,19 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 export default function MyBookings() {
-  const [bookings, setBookings] = useState([]);
-
-  useEffect(() => {
+  // Initialize state directly from localStorage
+  const getInitialBookings = () => {
     const medical = localStorage.getItem("medicalBookings");
     const regular = localStorage.getItem("bookings");
-
     const data = medical || regular;
     try {
-      setBookings(data ? JSON.parse(data) : []);
+      return data ? JSON.parse(data) : [];
     } catch {
-      setBookings([]);
+      return [];
     }
-  }, []);
+  };
+
+  const [bookings, setBookings] = useState(getInitialBookings);
 
   return (
     <div className="bookings-page" style={{ padding: "2rem" }}>
